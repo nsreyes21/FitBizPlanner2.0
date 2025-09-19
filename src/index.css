@@ -1,0 +1,183 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 248 50% 97%;
+    --foreground: 215 25% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 15%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 215 25% 15%;
+
+    --muted: 220 14% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 220 14% 96%;
+    --accent-foreground: 215 25% 15%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 217 91% 60%;
+
+    /* Event type colors */
+    --apparel: 217 91% 60%;
+    --apparel-foreground: 0 0% 100%;
+    --community: 142 76% 36%;
+    --community-foreground: 0 0% 100%;
+    --holiday: 25 95% 53%;
+    --holiday-foreground: 0 0% 100%;
+    --marketing: 271 81% 56%;
+    --marketing-foreground: 0 0% 100%;
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(142 76% 36%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(220 14% 98%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(220 14% 99%) 100%);
+    
+    /* Shadows */
+    --shadow-soft: 0 4px 20px -2px hsl(217 91% 60% / 0.1);
+    --shadow-medium: 0 8px 30px -4px hsl(217 91% 60% / 0.15);
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 215 28% 7%;
+    --foreground: 210 40% 98%;
+
+    --card: 215 28% 9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 215 28% 9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 215 25% 15%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 215 25% 15%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 215 25% 15%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 215 25% 15%;
+    --input: 215 25% 15%;
+    --ring: 217 91% 60%;
+
+    /* Event type colors for dark mode */
+    --apparel: 217 91% 60%;
+    --community: 142 76% 36%;
+    --holiday: 25 95% 53%;
+    --marketing: 271 81% 56%;
+
+    --gradient-hero: linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(142 76% 36%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(215 28% 9%) 0%, hsl(215 25% 12%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(215 28% 9%) 0%, hsl(215 25% 11%) 100%);
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    /* Mobile optimizations */
+    overscroll-behavior: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    
+    /* Prevent zoom on input focus on iOS */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  
+  /* Mobile-specific styles */
+  @media screen and (max-width: 768px) {
+    html {
+      font-size: 16px; /* Prevent zoom on input focus on iOS */
+    }
+    
+    body {
+      /* Handle mobile viewport units properly */
+      min-height: 100vh;
+      min-height: 100dvh;
+      
+      /* Prevent scroll when keyboard is open */
+      position: relative;
+    }
+    
+    /* Ensure inputs don't get covered by virtual keyboard */
+    input, textarea, select {
+      font-size: 16px; /* Prevent zoom on iOS */
+    }
+    
+    /* Smooth scrolling when keyboard appears */
+    .keyboard-open {
+      height: calc(100vh - env(keyboard-inset-height, 0px));
+      transition: height 0.3s ease-in-out;
+    }
+  }
+}
+
+@layer utilities {
+  .bg-gradient-subtle {
+    background: var(--gradient-subtle);
+  }
+  
+  .last-in-row:nth-child(7n) {
+    border-right: none !important;
+  }
+  
+  .last-row {
+    border-bottom: none !important;
+  }
+}
