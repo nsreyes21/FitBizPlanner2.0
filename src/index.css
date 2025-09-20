@@ -128,6 +128,10 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  html, body, #root {
+    height: 100%;
+  }
+  
   body {
     @apply bg-background text-foreground;
     /* Mobile optimizations */
@@ -138,6 +142,9 @@ All colors MUST be HSL.
     /* Prevent zoom on input focus on iOS */
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    
+    /* Prevent body overflow to enable proper internal scrolling */
+    overflow: hidden;
   }
   
   /* Mobile-specific styles */
@@ -179,5 +186,14 @@ All colors MUST be HSL.
   
   .last-row {
     border-bottom: none !important;
+  }
+  
+  /* Locked blur effect for plan preview */
+  .locked {
+    @apply relative;
+  }
+  
+  .locked > .veil {
+    @apply absolute inset-0 bg-background/40 backdrop-blur-sm flex items-center justify-center rounded-xl;
   }
 }

@@ -56,11 +56,11 @@ export function AuthHeader({ onBuildPlan, onAddEvent }: AuthHeaderProps) {
 
   return (
     <header className="border-b bg-gradient-hero">
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white">FitBiz Calendar</h1>
-            <p className="text-white/90 mt-1">Smart event planning for fitness businesses</p>
+            <h1 className="text-2xl font-bold text-white">FitBiz Calendar</h1>
+            <p className="text-white/90 text-sm">Smart event planning for fitness businesses</p>
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
             <Badge variant="secondary" className="bg-white/10 text-white border-white/20">

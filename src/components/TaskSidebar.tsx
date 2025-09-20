@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { CalendarDays, Clock, CheckCircle, User } from "lucide-react";
 import { useState } from "react";
 import { usePreviewMigration } from "@/hooks/usePreviewMigration";
@@ -38,6 +39,7 @@ interface TaskSidebarProps {
   onMilestoneToggle?: (eventId: string, milestoneId: string) => void;
   onMilestoneOwnerUpdate?: (eventId: string, milestoneId: string, owner: string) => void;
   onShowSignupModal?: () => void;
+  noCard?: boolean; // When true, don't wrap in Card component
 }
 
 const eventTypeColors = {
@@ -47,7 +49,7 @@ const eventTypeColors = {
   marketing: 'bg-marketing text-marketing-foreground'
 };
 
-export function TaskSidebar({ selectedEvent, onTaskToggle, onTaskNotesUpdate, onMilestoneToggle, onMilestoneOwnerUpdate, onShowSignupModal }: TaskSidebarProps) {
+export function TaskSidebar({ selectedEvent, onTaskToggle, onTaskNotesUpdate, onMilestoneToggle, onMilestoneOwnerUpdate, onShowSignupModal, noCard = false }: TaskSidebarProps) {
   const [expandedMilestone, setExpandedMilestone] = useState<string | null>(null);
   const [editingNotes, setEditingNotes] = useState<string | null>(null);
   const [editingOwner, setEditingOwner] = useState<string | null>(null);
@@ -99,13 +101,23 @@ export function TaskSidebar({ selectedEvent, onTaskToggle, onTaskNotesUpdate, on
   };
 
   if (!selectedEvent) {
+    const emptyState = (
+      <div className="flex items-center justify-center h-full text-muted-foreground">
+        <div className="text-center">
+          <CalendarDays className="h-12 w-12 mx-auto mb-4 opacity-50" />
+          <p>Select an event to view tasks</p>
+        </div>
+      </div>
+    );
+
+    if (noCard) {
+      return <div className="h-full">{emptyState}</div>;
+    }
+
     return (
       <Card className="h-full">
-        <CardContent className="flex items-center justify-center h-full text-muted-foreground">
-          <div className="text-center">
-            <CalendarDays className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>Select an event to view tasks</p>
-          </div>
+        <CardContent className="h-full">
+          {emptyState}
         </CardContent>
       </Card>
     );
@@ -121,12 +133,13 @@ export function TaskSidebar({ selectedEvent, onTaskToggle, onTaskNotesUpdate, on
 
   const progressPercentage = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
 
-  return (
-    <Card className="h-full">
-      <CardHeader>
+  const taskContent = (
+    <div className="h-full flex flex-col min-h-0">
+      <div className="p-4">
+        {/* Active event selector, badges, etc. */}
         <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <CardTitle className="text-lg">{selectedEvent.title}</CardTitle>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-lg font-semibold">{selectedEvent.title}</h3>
             <div className="flex items-center gap-2 mt-2">
               <Badge className={eventTypeColors[selectedEvent.type]}>
                 {selectedEvent.type.charAt(0).toUpperCase() + selectedEvent.type.slice(1)}
@@ -151,176 +164,94 @@ export function TaskSidebar({ selectedEvent, onTaskToggle, onTaskNotesUpdate, on
             />
           </div>
         </div>
-      </CardHeader>
+      </div>
       
-      <CardContent className="space-y-4">
-        {selectedEvent.milestones.map((milestone) => {
-          const isExpanded = expandedMilestone === milestone.id;
-          const completedMilestoneTasks = milestone.tasks.filter(task => task.completed).length;
-          
-          return (
-            <div key={milestone.id} className="border rounded-lg p-4">
-              <div 
-                className="flex items-center justify-between cursor-pointer"
-                onClick={() => setExpandedMilestone(isExpanded ? null : milestone.id)}
-              >
-                <div className="flex items-center gap-3">
-                  <Checkbox
-                    checked={milestone.completed}
-                    onCheckedChange={() => handleMilestoneToggle(selectedEvent.id, milestone.id)}
-                    className="data-[state=checked]:bg-primary"
-                  />
-                  <div className="flex-1">
-                    <h4 className="font-medium">{milestone.title}</h4>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Clock className="h-3 w-3" />
-                      {milestone.date.toLocaleDateString()}
-                      <span>•</span>
-                      <span>{completedMilestoneTasks}/{milestone.tasks.length} tasks</span>
-                      {milestone.owner && (
-                        <>
-                          <span>•</span>
-                          <User className="h-3 w-3" />
-                          <span>{milestone.owner}</span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                
-                <CheckCircle 
-                  className={`h-5 w-5 transition-colors ${
-                    milestone.completed ? 'text-primary' : 'text-muted-foreground'
-                  }`}
-                />
-              </div>
+      <div className="flex-1 min-h-0">
+        <ScrollArea className="h-full">
+          <div className="px-4 pb-4 space-y-4">
+            {/* Wrap each big checklist in its own card; long lists will scroll because the parent has ScrollArea */}
+            {selectedEvent.milestones.map((milestone) => {
+              const isExpanded = expandedMilestone === milestone.id;
+              const completedMilestoneTasks = milestone.tasks.filter(task => task.completed).length;
               
-              {isExpanded && (
-                <div className="mt-4 space-y-3">
-                  {/* Owner editing */}
-                  <div className="pb-3 border-b">
-                    <div className="flex items-center gap-2 text-sm">
-                      <User className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-muted-foreground">Owner:</span>
-                      {editingOwner === milestone.id ? (
-                        <div className="flex items-center gap-2 flex-1">
-                          <Input
-                            placeholder="Enter owner name"
-                            defaultValue={milestone.owner || ''}
-                            className="h-7 text-sm"
-                            onBlur={(e) => {
-                              handleMilestoneOwnerUpdate(selectedEvent.id, milestone.id, e.target.value);
-                              setEditingOwner(null);
-                            }}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                handleMilestoneOwnerUpdate(selectedEvent.id, milestone.id, e.currentTarget.value);
-                                setEditingOwner(null);
-                              }
-                              if (e.key === 'Escape') {
-                                setEditingOwner(null);
-                              }
-                            }}
-                            autoFocus
-                          />
+              return (
+                <div key={milestone.id} className="border rounded-lg p-4">
+                  <div 
+                    className="flex items-center justify-between cursor-pointer"
+                    onClick={() => setExpandedMilestone(isExpanded ? null : milestone.id)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Checkbox
+                        checked={milestone.completed}
+                        onCheckedChange={() => handleMilestoneToggle(selectedEvent.id, milestone.id)}
+                        className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                      />
+                      <div>
+                        <div className="font-medium">{milestone.title}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {completedMilestoneTasks}/{milestone.tasks.length} tasks completed
                         </div>
-                      ) : (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-6 px-2 text-xs"
-                          onClick={() => setEditingOwner(milestone.id)}
-                        >
-                          {milestone.owner || 'Assign owner'}
-                        </Button>
-                      )}
+                      </div>
                     </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0"
+                    >
+                      {isExpanded ? '−' : '+'}
+                    </Button>
                   </div>
                   
-                  {milestone.tasks.map((task) => (
-                    <div key={task.id} className="space-y-2">
-                      <div className="flex items-start gap-3">
-                        <Checkbox
-                          checked={task.completed}
-                          onCheckedChange={() => handleTaskToggle(selectedEvent.id, milestone.id, task.id)}
-                          className="mt-0.5"
-                        />
-                        <span className={`text-sm ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
-                          {task.title}
-                        </span>
-                      </div>
-                      
-                      {task.notes && editingNotes !== task.id && (
-                        <div className="ml-6 p-2 bg-muted rounded text-sm">
-                          {task.notes}
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="ml-2 h-6 text-xs"
-                            onClick={() => setEditingNotes(task.id)}
-                          >
-                            Edit
-                          </Button>
-                        </div>
-                      )}
-                      
-                      {editingNotes === task.id && (
-                        <div className="ml-6 space-y-2">
-                          <Textarea
-                            placeholder="Add notes..."
-                            defaultValue={task.notes}
-                            className="text-sm"
-                            onBlur={(e) => {
-                              handleTaskNotesUpdate(selectedEvent.id, milestone.id, task.id, e.target.value);
-                              setEditingNotes(null);
-                            }}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter' && e.ctrlKey) {
-                                handleTaskNotesUpdate(selectedEvent.id, milestone.id, task.id, e.currentTarget.value);
-                                setEditingNotes(null);
-                              }
-                            }}
-                            autoFocus
+                  {isExpanded && (
+                    <div className="mt-4 space-y-2">
+                      {milestone.tasks.map((task) => (
+                        <div key={task.id} className="flex items-start gap-3 ml-6">
+                          <Checkbox
+                            checked={task.completed}
+                            onCheckedChange={() => handleTaskToggle(selectedEvent.id, milestone.id, task.id)}
+                            className="mt-0.5 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                           />
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              onClick={(e) => {
-                                const textarea = e.currentTarget.parentElement?.previousElementSibling as HTMLTextAreaElement;
-                                handleTaskNotesUpdate(selectedEvent.id, milestone.id, task.id, textarea.value);
-                                setEditingNotes(null);
-                              }}
-                            >
-                              Save
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => setEditingNotes(null)}
-                            >
-                              Cancel
-                            </Button>
+                          <div className="flex-1">
+                            <div className={`text-sm ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
+                              {task.title}
+                            </div>
+                            {task.notes && (
+                              <div className="text-xs text-muted-foreground mt-1">
+                                {task.notes}
+                              </div>
+                            )}
                           </div>
+                          {!task.notes && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="ml-6 h-6 text-xs text-muted-foreground"
+                              onClick={() => setEditingNotes(task.id)}
+                            >
+                              Add notes
+                            </Button>
+                          )}
                         </div>
-                      )}
-                      
-                      {!task.notes && editingNotes !== task.id && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="ml-6 h-6 text-xs text-muted-foreground"
-                          onClick={() => setEditingNotes(task.id)}
-                        >
-                          Add notes
-                        </Button>
-                      )}
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
-              )}
-            </div>
-          );
-        })}
+              );
+            })}
+          </div>
+        </ScrollArea>
+      </div>
+    </div>
+  );
+
+  if (noCard) {
+    return taskContent;
+  }
+
+  return (
+    <Card className="h-full">
+      <CardContent className="h-full">
+        {taskContent}
       </CardContent>
     </Card>
   );

@@ -169,41 +169,43 @@ export function ReviewStep({ formData, onUpdateFormData }: ReviewStepProps) {
   };
 
   return (
-    <div className="space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
-            Annual Plan Review
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <span className="font-medium">Business:</span> {formData.businessType}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-w-0">
+      {/* Main Content Column */}
+      <div className="min-w-0 space-y-4">
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Calendar className="h-4 w-4" />
+              Annual Plan Review
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 md:p-5">
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="font-medium">Business:</span> {formData.businessType}
+              </div>
+              <div>
+                <span className="font-medium">Location:</span> {formData.city}
+              </div>
+              <div>
+                <span className="font-medium">Total Events:</span> {selectedEvents.length}
+              </div>
+              <div>
+                <span className="font-medium">Focus Areas:</span>{' '}
+                {[
+                  formData.focusApparel && 'Apparel',
+                  formData.focusCommunity && 'Community',
+                  formData.focusHolidays && 'Holidays',
+                  formData.focusBusiness && 'Business'
+                ].filter(Boolean).join(', ')}
+              </div>
             </div>
-            <div>
-              <span className="font-medium">Location:</span> {formData.city}
-            </div>
-            <div>
-              <span className="font-medium">Total Events:</span> {selectedEvents.length}
-            </div>
-            <div>
-              <span className="font-medium">Focus Areas:</span>{' '}
-              {[
-                formData.focusApparel && 'Apparel',
-                formData.focusCommunity && 'Community',
-                formData.focusHolidays && 'Holidays',
-                formData.focusBusiness && 'Business'
-              ].filter(Boolean).join(', ')}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
       {/* Free Preview Badge */}
       {!isAuthenticated && (
-        <div className="flex justify-center mb-4">
+        <div className="flex justify-center mb-3">
           <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
             <Crown className="h-3 w-3 mr-1" />
             Free Preview
@@ -244,7 +246,7 @@ export function ReviewStep({ formData, onUpdateFormData }: ReviewStepProps) {
                       variant="outline"
                       size="sm"
                       onClick={handleAddCustomEvent}
-                      className="mb-4 w-full"
+                      className="mb-3 w-full"
                     >
                       <Plus className="h-4 w-4 mr-1" />
                       Add Event
@@ -253,7 +255,7 @@ export function ReviewStep({ formData, onUpdateFormData }: ReviewStepProps) {
 
                   {/* Custom event form */}
                   {quarter === 1 && showCustomEventForm && (
-                    <div className="mb-4 p-4 border rounded-lg bg-muted/50">
+                    <div className="mb-3 p-4 border rounded-lg bg-muted/50">
                       <h4 className="font-medium mb-3">Add Custom Event to Q1</h4>
                       <div className="space-y-3">
                         <div>
@@ -485,7 +487,7 @@ export function ReviewStep({ formData, onUpdateFormData }: ReviewStepProps) {
                   ))}
                 </div>
               )}
-              <div className="mt-4 pt-3 border-t border-dashed border-muted-foreground/30">
+              <div className="mt-3 pt-3 border-t border-dashed border-muted-foreground/30">
                 <p className="text-sm text-muted-foreground text-center">
                   Your Q1 plan is free to use — no account required.
                 </p>
@@ -518,7 +520,7 @@ export function ReviewStep({ formData, onUpdateFormData }: ReviewStepProps) {
                   <CardContent>
                     {/* Custom event form */}
                     {showCustomEventForm && (
-                      <div className="mb-4 p-4 border rounded-lg bg-muted/50">
+                      <div className="mb-3 p-4 border rounded-lg bg-muted/50">
                         <h4 className="font-medium mb-3">Add Custom Event</h4>
                         <div className="space-y-3">
                           <div>
@@ -659,7 +661,7 @@ export function ReviewStep({ formData, onUpdateFormData }: ReviewStepProps) {
         <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10">
           <CardContent className="pt-6">
             <div className="text-center space-y-4">
-              <div className="flex items-center justify-center mb-4">
+              <div className="flex items-center justify-center mb-3">
                 <div className="p-3 bg-primary/20 rounded-full">
                   <Lock className="h-6 w-6 text-primary" />
                 </div>
@@ -685,6 +687,41 @@ export function ReviewStep({ formData, onUpdateFormData }: ReviewStepProps) {
           </CardContent>
         </Card>
       )}
+      </div>
+
+      {/* Summary Column - Desktop Only */}
+      <div className="min-w-0 hidden md:block">
+        <Card>
+          <CardContent className="p-4 md:p-5">
+            <h3 className="text-sm font-medium mb-3">Plan Summary</h3>
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Selected Events:</span>
+                <span className="font-medium">{selectedEvents.length}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Business Type:</span>
+                <span className="font-medium">{formData.businessType || 'Not selected'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Location:</span>
+                <span className="font-medium">{formData.city || 'Not selected'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Focus Areas:</span>
+                <span className="font-medium text-xs">
+                  {[
+                    formData.focusApparel && 'Apparel',
+                    formData.focusCommunity && 'Community',
+                    formData.focusHolidays && 'Holidays',
+                    formData.focusBusiness && 'Business'
+                  ].filter(Boolean).join(', ') || 'None'}
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
       
       <SignupGateModal 
         open={showSignupModal}

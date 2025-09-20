@@ -120,87 +120,85 @@ export function BuildMyPlanDialog({ open, onOpenChange }: BuildMyPlanDialogProps
     }
   };
 
+  const Stepper = ({ current, steps }: { current: number; steps: string[] }) => (
+    <div className="flex items-center gap-2 text-xs">
+      {steps.map((step, index) => (
+        <div
+          key={index}
+          className={`w-6 h-1 rounded-full transition-colors ${
+            index + 1 <= current ? 'bg-primary' : 'bg-muted'
+          }`}
+        />
+      ))}
+    </div>
+  );
+
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh]">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">
-            {getStepTitle()}
-          </DialogTitle>
-          <div className="flex items-center gap-2 mt-2">
-            {[1, 2, 3, 4].map((step) => (
-              <div
-                key={step}
-                className={`w-8 h-1 rounded-full transition-colors ${
-                  step <= currentStep ? 'bg-primary' : 'bg-muted'
-                }`}
-              />
-            ))}
+      <DialogContent className="w-full sm:max-w-[840px] md:max-w-[920px] p-0 overflow-hidden">
+        <div className="flex flex-col h-[min(80vh,720px)] min-h-[520px] overflow-x-hidden">
+          {/* Header */}
+          <div className="px-6 pt-5 pb-3 border-b">
+            <h2 className="text-lg font-semibold">Build My Plan</h2>
+            <p className="text-sm text-muted-foreground">Smart 12-month plan</p>
           </div>
-        </DialogHeader>
 
-        <div className="relative min-h-0">
-          <div 
-            className="flex transition-transform duration-300 ease-in-out max-h-[60vh] overflow-y-auto"
-            style={{ transform: `translateX(-${(currentStep - 1) * 100}%)` }}
-          >
-            <div className="w-full flex-shrink-0">
+          {/* Body - Only scrollable area */}
+          <div className="flex-1 min-h-0 overflow-y-auto px-6 py-4">
+            {currentStep === 1 && (
               <ProfileStep 
                 formData={formData}
                 onUpdateFormData={updateFormData}
               />
-            </div>
-            <div className="w-full flex-shrink-0">
+            )}
+            {currentStep === 2 && (
               <RecommendationsStep 
                 formData={formData}
                 onUpdateFormData={updateFormData}
               />
-            </div>
-            <div className="w-full flex-shrink-0">
+            )}
+            {currentStep === 3 && (
               <ReviewStep 
                 formData={formData}
                 onUpdateFormData={updateFormData}
               />
-            </div>
-            <div className="w-full flex-shrink-0">
+            )}
+            {currentStep === 4 && (
               <SaveStep 
                 formData={formData}
                 onSave={handleClose}
               />
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="px-6 pb-5 pt-3 border-t flex items-center justify-between">
+            <Stepper current={currentStep} steps={['Info', 'Summary', 'Preview', 'Save']} />
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" onClick={handleClose}>
+                Cancel
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={prevStep}
+                disabled={currentStep === 1}
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back
+              </Button>
+              <Button
+                size="sm"
+                onClick={currentStep === 4 ? handleClose : nextStep}
+                disabled={!canProceed()}
+                className="flex items-center gap-2"
+              >
+                {currentStep === 4 ? 'Finish' : 'Next'}
+                {currentStep < 4 && <ArrowRight className="h-4 w-4" />}
+              </Button>
             </div>
           </div>
-        </div>
-
-        <div className="flex items-center justify-between pt-4 border-t">
-          <Button
-            variant="outline"
-            onClick={prevStep}
-            disabled={currentStep === 1}
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
-
-          <div className="text-sm text-muted-foreground">
-            Step {currentStep} of 4
-          </div>
-
-          {currentStep < 4 ? (
-            <Button
-              onClick={nextStep}
-              disabled={!canProceed()}
-            >
-              Next
-              <ArrowRight className="h-4 w-4 ml-2" />
-            </Button>
-          ) : (
-            <Button
-              onClick={handleClose}
-              disabled={!canProceed()}
-            >
-              Complete Setup
-            </Button>
-          )}
         </div>
       </DialogContent>
     </Dialog>

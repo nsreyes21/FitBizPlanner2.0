@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { EventCalendar } from '@/components/EventCalendar';
 import { TaskSidebar } from '@/components/TaskSidebar';
 import { AddEventDialog } from '@/components/AddEventDialog';
-import { BuildMyPlanDialog } from '@/components/BuildMyPlanDialog';
-import { AuthHeader } from '@/components/AuthHeader';
+import { BuildPlanWizard } from '@/features/plan/BuildPlanWizard';
+import { Layout } from '@/components/Layout';
 import { OnboardingBanner } from '@/components/OnboardingBanner';
 import { OnboardingTour } from '@/components/OnboardingTour';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -93,7 +93,23 @@ const Index = () => {
               { id: 'st1', title: 'Design mockups and get approval', completed: true },
               { id: 'st2', title: 'Set up pre-order system', completed: true },
               { id: 'st3', title: 'Create social media graphics', completed: false },
-              { id: 'st4', title: 'Send announcement email to members', completed: false }
+              { id: 'st4', title: 'Send announcement email to members', completed: false },
+              { id: 'st5', title: 'Create product photography', completed: false },
+              { id: 'st6', title: 'Write product descriptions', completed: false },
+              { id: 'st7', title: 'Set up inventory tracking', completed: false },
+              { id: 'st8', title: 'Plan launch event', completed: false }
+            ]
+          },
+          {
+            id: 'sm2',
+            title: 'Marketing Campaign',
+            date: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1),
+            completed: false,
+            tasks: [
+              { id: 'st9', title: 'Create email marketing sequence', completed: false },
+              { id: 'st10', title: 'Design social media posts', completed: false },
+              { id: 'st11', title: 'Set up Google Ads campaign', completed: false },
+              { id: 'st12', title: 'Coordinate with influencers', completed: false }
             ]
           }
         ]
@@ -105,13 +121,37 @@ const Index = () => {
         type: 'community' as const,
         milestones: [
           {
-            id: 'sm2',
+            id: 'sm3',
             title: 'Event Planning',
             date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 22),
             completed: false,
             tasks: [
-              { id: 'st5', title: 'Choose date and location', completed: true },
-              { id: 'st6', title: 'Create event theme and activities', completed: false }
+              { id: 'st13', title: 'Choose date and location', completed: true },
+              { id: 'st14', title: 'Create event theme and activities', completed: false },
+              { id: 'st15', title: 'Order food and supplies', completed: false },
+              { id: 'st16', title: 'Send invitations to members', completed: false },
+              { id: 'st17', title: 'Set up registration system', completed: false },
+              { id: 'st18', title: 'Plan entertainment and games', completed: false }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'sample-3',
+        title: 'Holiday Fitness Challenge',
+        date: new Date(currentDate.getFullYear(), currentDate.getMonth() + 2, 1),
+        type: 'community' as const,
+        milestones: [
+          {
+            id: 'sm4',
+            title: 'Challenge Setup',
+            date: new Date(currentDate.getFullYear(), currentDate.getMonth() + 2, 1),
+            completed: false,
+            tasks: [
+              { id: 'st19', title: 'Design challenge rules and prizes', completed: false },
+              { id: 'st20', title: 'Create tracking system', completed: false },
+              { id: 'st21', title: 'Recruit judges and volunteers', completed: false },
+              { id: 'st22', title: 'Set up leaderboard', completed: false }
             ]
           }
         ]
@@ -178,98 +218,116 @@ const Index = () => {
 
 
   return (
-    <div className="min-h-screen bg-background">
-      <AuthHeader 
-        onBuildPlan={() => setShowBuildPlanDialog(true)}
-        onAddEvent={() => setShowAddEventDialog(true)}
-      />
-
-      <div className="container mx-auto px-4 py-6">
+    <Layout
+      onBuildPlan={() => setShowBuildPlanDialog(true)}
+      onAddEvent={() => setShowAddEventDialog(true)}
+    >
+      <div className="mx-auto w-full max-w-[1200px] px-4 md:px-6 py-2 md:py-3">
         {/* Onboarding Banner */}
-        <OnboardingBanner />
+        <OnboardingBanner className="mb-2" />
 
-          {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 my-6">
+        {/* KPI Cards */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
           <Card>
-            <CardContent className="flex items-center gap-4 p-4">
-              <Calendar className="h-8 w-8 text-primary" />
-              <div>
-                <p className="text-2xl font-bold">{displayEvents.length}</p>
-                <p className="text-sm text-muted-foreground">Active Events</p>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="flex items-center gap-4 p-4">
-              <Target className="h-8 w-8 text-community" />
-              <div>
-                <p className="text-2xl font-bold">{displayEvents.reduce((sum, e) => sum + (e.milestones?.length || 0), 0)}</p>
-                <p className="text-sm text-muted-foreground">Milestones</p>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="flex items-center gap-4 p-4">
-              <Users className="h-8 w-8 text-marketing" />
-              <div>
-                <p className="text-2xl font-bold">{displayEvents.filter(e => e.type === 'community').length}</p>
-                <p className="text-sm text-muted-foreground">Community Events</p>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="flex items-center gap-4 p-4">
-              <Shirt className="h-8 w-8 text-apparel" />
-              <div>
-                <p className="text-2xl font-bold">{displayEvents.filter(e => e.type === 'apparel').length}</p>
-                <p className="text-sm text-muted-foreground">Apparel Launches</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Calendar */}
-          <div className="lg:col-span-2">
-            {isLoading ? (
-              <div className="flex items-center justify-center h-96">
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                  <p className="text-muted-foreground">Loading your events...</p>
+            <CardContent className="py-2 px-3">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-5 w-5 text-primary" />
+                <div>
+                  <p className="text-base font-bold">{displayEvents.length}</p>
+                  <p className="text-xs text-muted-foreground">Active Events</p>
                 </div>
               </div>
-            ) : (
-              <EventCalendar 
-                events={displayEvents}
-                onEventClick={setSelectedEvent}
-                onDateSelect={(date) => {
-                  console.log('Date selected:', date);
-                }}
-                onDateDoubleClick={(date) => {
-                  setShowAddEventDialog(true);
-                }}
-              />
-            )}
-          </div>
-
-          {/* Task Sidebar */}
-          <div>
-            <TaskSidebar
-              selectedEvent={selectedEvent}
-              onTaskToggle={handleTaskToggle}
-              onTaskNotesUpdate={handleTaskNotesUpdate}
-              onMilestoneToggle={handleMilestoneToggle}
-              onMilestoneOwnerUpdate={handleMilestoneOwnerUpdate}
-              onShowSignupModal={() => setShowBuildPlanDialog(true)}
-            />
-          </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="py-2 px-3">
+              <div className="flex items-center gap-2">
+                <Target className="h-5 w-5 text-community" />
+                <div>
+                  <p className="text-base font-bold">{displayEvents.reduce((sum, e) => sum + (e.milestones?.length || 0), 0)}</p>
+                  <p className="text-xs text-muted-foreground">Milestones</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="py-2 px-3">
+              <div className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-marketing" />
+                <div>
+                  <p className="text-base font-bold">{displayEvents.filter(e => e.type === 'community').length}</p>
+                  <p className="text-xs text-muted-foreground">Community Events</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="py-2 px-3">
+              <div className="flex items-center gap-2">
+                <Shirt className="h-5 w-5 text-apparel" />
+                <div>
+                  <p className="text-base font-bold">{displayEvents.filter(e => e.type === 'apparel').length}</p>
+                  <p className="text-xs text-muted-foreground">Apparel Launches</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
+        {/* Main Content Grid - Fixed columns with internal scroll */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr,380px] gap-6 h-[calc(100vh-280px)] overflow-hidden">
+          {/* LEFT: Calendar container - non-scrolling, inner content scrolls */}
+          <Card className="overflow-hidden min-h-0">
+            <div className="flex h-full flex-col min-h-0">
+              {isLoading ? (
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                    <p className="text-muted-foreground">Loading your events...</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-1 min-h-0 overflow-auto">
+                  <EventCalendar 
+                    events={displayEvents}
+                    onEventClick={setSelectedEvent}
+                    onDateSelect={(date) => {
+                      console.log('Date selected:', date);
+                    }}
+                    onDateDoubleClick={(date) => {
+                      setShowAddEventDialog(true);
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          </Card>
+
+          {/* RIGHT: Task sidebar - container locked, content scrolls */}
+          <Card className="overflow-hidden min-h-0">
+            <div className="flex h-full flex-col min-h-0">
+              <div className="p-4 border-b bg-background sticky top-0 z-10">
+                <h3 className="text-lg font-semibold">Tasks</h3>
+              </div>
+              <div className="flex-1 min-h-0 overflow-auto">
+                <div className="p-6">
+                  <TaskSidebar
+                    selectedEvent={selectedEvent}
+                    onTaskToggle={handleTaskToggle}
+                    onTaskNotesUpdate={handleTaskNotesUpdate}
+                    onMilestoneToggle={handleMilestoneToggle}
+                    onMilestoneOwnerUpdate={handleMilestoneOwnerUpdate}
+                    onShowSignupModal={() => setShowBuildPlanDialog(true)}
+                    noCard={true}
+                  />
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
       </div>
 
       {/* Add Event Dialog */}
@@ -280,14 +338,14 @@ const Index = () => {
       />
 
       {/* Build My Plan Dialog */}
-      <BuildMyPlanDialog
+      <BuildPlanWizard
         open={showBuildPlanDialog}
         onOpenChange={setShowBuildPlanDialog}
       />
 
       {/* Onboarding Tour */}
       <OnboardingTour />
-    </div>
+    </Layout>
   );
 };
 

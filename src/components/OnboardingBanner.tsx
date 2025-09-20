@@ -2,10 +2,15 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { X, Sparkles } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const BANNER_DISMISSED_KEY = 'onboarding-banner-dismissed';
 
-export function OnboardingBanner() {
+interface OnboardingBannerProps {
+  className?: string;
+}
+
+export function OnboardingBanner({ className }: OnboardingBannerProps) {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -21,7 +26,7 @@ export function OnboardingBanner() {
   if (!isVisible) return null;
 
   return (
-    <Card className="mb-6 border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10">
+    <Card className={cn("rounded-md border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10", className)}>
       <CardContent className="pt-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
